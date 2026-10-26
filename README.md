@@ -26,3 +26,14 @@ Robbor CP operates on a three-tier hardware-to-software architecture:
 * /hardware: Contains 3D CAD files (.STEP) for the physical injection-molded cap and KiCad electrical schematics for the custom circular PCB.
 * /firmware: Source code for the internal ultra-low-power microcontroller.
 * /software: Python-based REST API and web dashboard for data center technicians.
+### 🟢 Nvidia Inception Ecosystem Integration Matrix
+
+Robbor CP is engineered to natively interface with the enterprise Nvidia data center and edge compute stacks to automate physical layer protection and risk management. 
+
+### 1. Edge Auditing via Nvidia DeepStream & Jetson Orin
+
+The edge-jetson/ directory houses the real-time computer vision configuration. By deploying optimized TensorRT inference engines onto on-site Nvidia Jetson Orin modules, the system dynamically analyzes infrastructure visual data feeds (via RTSP streams) to instantly detect, categorize, and flag un-mated or exposed UQD port connections. 
+
+### 2. Predictive Thermal Throttling via Nvidia DCGM
+
+The rack-egx/ architecture utilizes the Nvidia Data Center GPU Manager (DCGM) API to establish a tight feedback loop between physical state changes and GPU thermals. In the event of fluidic loop anomalies or localized micron-scale microchannel clogs caused by physical interface contamination, the Go-based monitoring daemon intercepts junction temperature spikes and triggers emergency node isolation commands via Nvidia Base Command.
