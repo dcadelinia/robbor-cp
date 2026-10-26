@@ -1,0 +1,32 @@
+[application]
+enable-perf-measurement=1
+perf-measurement-interval-sec=5 
+
+[source0]
+enable=1 
+
+### Type 2 indicates a live camera feed or data center RTSP video stream
+
+type=2
+uri=rtsp://localhost:8554/datacenter-rack-aisle-camera
+num-sources=1 
+
+[sink0]
+enable=1
+type=3 
+
+### Output directly to an on-site edge monitor or analytics database
+
+container=1
+codec=1
+output-file=robbor_vision_audit.mp4 
+
+[primary-gie]
+enable=1
+model-engine-file=../models/robbor_cp_detection_orin.engine
+batch-size=1
+bbox-border-color0=0;1;0;1 # Green box for Capped / Secured Port
+bbox-border-color1=1;0;0;1 # Red box for Exposed / Contaminated Port
+interval=0
+gie-unique-id=1
+nvbuf-memory-type=0
