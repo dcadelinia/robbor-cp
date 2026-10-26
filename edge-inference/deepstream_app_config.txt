@@ -1,0 +1,32 @@
+[application]
+enable-perf-measurement=1
+perf-measurement-interval-sec=5 
+
+[source0]
+enable=1 
+
+### Type 2 indicates an RTSP live network camera stream from the datacenter floor
+
+type=2
+uri=rtsp://localhost:8554/datacenter-aisle-4-stream
+num-sources=1 
+
+[sink0]
+enable=1 
+
+### Type 3 indicates an isolated local storage dump for security logging
+
+type=3
+container=1
+codec=1
+output-file=odynex_port_audit_log.mp4 
+
+[primary-gie]
+enable=1
+model-engine-file=../models/odynex_uqd_detector_orin.engine
+batch-size=1
+bbox-border-color0=0;1;0;1 # Green Box: Fluid port verified SECURE/CAPPED
+bbox-border-color1=1;0;0;1 # Red Box: Fluid port EXPOSED/CRITICAL
+interval=0
+gie-unique-id=1
+nvbuf-memory-type=0
