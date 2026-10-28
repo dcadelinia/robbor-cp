@@ -1,39 +1,20 @@
-# robbor-cp
-Intelligent fluidic coupling protection and telemetry for next-generation AI data center architecture.
-### Robbor CP (Cooling Protection)
+# Hardware – Robbor CP Node
 
-Robbor CP is an intelligent, telemetry-enabled hardware protection system designed specifically for Universal Quick Disconnect (UQD) fluid couplings in liquid-cooled AI data centers. 
+This directory contains the physical design assets for the Robbor CP intelligent fluidic coupling cap.
 
-Optimized for high-density environments like the Nvidia Blackwell and Rubin architectures, Robbor CP bridges the gap between passive physical dust covers and active digital asset management. 
+## Layout
 
-### 🚀 Key Features
+| Path | Description |
+|------|-------------|
+| `cad/` | 3D CAD models (STEP / STL) of the injection-molded housing and locking collar |
+| `schematics/` | KiCad project for the custom circular low-power PCB (sensor array + BLE/NFC) |
 
-* **Smart Port Telemetry:** Integrated low-power wireless signaling (NFC/BLE) that communicates port exposure status to the rack infrastructure in real-time.
-* **ESD-Safe Polymer Shielding:** Advanced static-dissipating housing prevents high-voltage discharge near high-bandwidth memory (HBM) banks.
-* **Moisture-Sensing Core:** Internal electronic grid detects microscopic coolant micro-leaks or high-humidity ingress before hardware is hot-swapped.
-* **Rugged Mechanical Seal:** Industrial-grade locking mechanism designed for thousands of deployment cycles in ambient temperatures up to 85°C.
+## Material & Mechanical Notes
 
-### ⚙️ Architecture Overview
+- Housing: CNT-filled PEEK or equivalent ESD-dissipative fluoropolymer (10⁵–10⁹ Ω/sq)
+- Operating temperature: −20 °C to +85 °C
+- Mating cycles: ≥ 5 000
+- Seal: dual-lip elastomer + capillary-barrier micro-pore matrix (r < 2.5 µm)
 
-Robbor CP operates on a three-tier hardware-to-software architecture: 
-
-1. **Robbor CP Node (Hardware):** The physical cap embedded with an ultra-low-power microchip and sensor array.
-2. **Robbor-Link (Firmware/Daemon):** A lightweight background service running on the server rack management controller (BMC) that listens for cap states.
-3. **Robbor Command (Software API):** A centralized dashboard reporting the exact status (Capped, Exposed, Warning) of every fluid line in the cluster.
-
-### 📁 Repository Directory
-
-* /hardware: Contains 3D CAD files (.STEP) for the physical injection-molded cap and KiCad electrical schematics for the custom circular PCB.
-* /firmware: Source code for the internal ultra-low-power microcontroller.
-* /software: Python-based REST API and web dashboard for data center technicians.
-### 🟢 Nvidia Inception Ecosystem Integration Matrix
-
-Robbor CP is engineered to natively interface with the enterprise Nvidia data center and edge compute stacks to automate physical layer protection and risk management. 
-
-### 1. Edge Auditing via Nvidia DeepStream & Jetson Orin
-
-The edge-jetson/ directory houses the real-time computer vision configuration. By deploying optimized TensorRT inference engines onto on-site Nvidia Jetson Orin modules, the system dynamically analyzes infrastructure visual data feeds (via RTSP streams) to instantly detect, categorize, and flag un-mated or exposed UQD port connections. 
-
-### 2. Predictive Thermal Throttling via Nvidia DCGM
-
-The rack-egx/ architecture utilizes the Nvidia Data Center GPU Manager (DCGM) API to establish a tight feedback loop between physical state changes and GPU thermals. In the event of fluidic loop anomalies or localized micron-scale microchannel clogs caused by physical interface contamination, the Go-based monitoring daemon intercepts junction temperature spikes and triggers emergency node isolation commands via Nvidia Base Command.
+> **Note:** Production STEP and KiCad source files are under controlled release.
+> Contact the repository maintainers or use the Nvidia Inception Capital Connect data room for access.
