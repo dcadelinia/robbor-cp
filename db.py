@@ -1,7 +1,13 @@
 import sqlite3
 import os 
 
-DB_FILE = "mantagu_users.db" 
+### Redirect database storage target path safely inside the permanent Fly volume mount point
+
+DB_DIR = "/data"
+if not os.path.exists(DB_DIR):
+DB_DIR = "."  # Fallback to current directory context if running on local dev machine 
+
+DB_FILE = os.path.join(DB_DIR, "mantagu_users.db") 
 
 def init_db():
 """Initializes the database schema for users and billing states."""
@@ -43,9 +49,13 @@ cursor.execute("SELECT user_id, email, tier, status, frames_consumed FROM users 
 row = cursor.fetchone()
 conn.close()
 if row:
-return {"user_id": row, "email": row, "tier": row, "status": row, "frames_consumed": row}
+return {
+"user_id": row,
+"email": row,
+"tier": row,
+"status": row,
+"frames_consumed": row
+}
 return None 
-
-### Self-initialize schema on import context
 
 init_db()
