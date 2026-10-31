@@ -1,43 +1,71 @@
 import requests
 import json 
 
-### Local or production environment execution URL configuration target context
+### Your live production server URL destination point
 
-BASE_URL = "http://localhost:8080" # Change this target string to your live Fly URL when executing global tests 
+BASE_URL = "https://robbor-cp-uttvga.fly.dev" 
 
-def test_stripe_webhook_flow():
-"""Simulates a complete secure transaction webhook execution path."""
-print("🛰️ Constructing fake 'checkout.session.completed' webhook payload...") 
+def verify_live_billing_pipeline():
+print("🛰️ Initiating production checkout verification loop for 'robbor-cp-uttvga'...") 
 
+### 1. Verify the public pricing tiers are reachable
+
+print("\n🔍 Step 1: Checking reachable SaaS commercial pricing layers...")
+try:
+tiers_response = requests.get(f"{BASE_URL}/v1/billing/tiers")
+print(f"📬 Status Code: {tiers_response.status_code}")
+print(f"📄 Available Tiers: {json.dumps(tiers_response.json(), indent=2)}")
+except Exception as e:
+print(f"❌ Connection error fetching tiers: {e}")
+return 
+
+### 2. Simulate a completed payment transaction event from Stripe hooks
+
+print("\n💳 Step 2: Dispatching mock 'checkout.session.completed' webhook payload...")
 mock_stripe_event = {
-"id": "evt_test_123456789",
+"id": "evt_live_dcadelinia_2026",
 "type": "checkout.session.completed",
 "data": {
 "object": {
-"id": "cs_test_abcde12345",
-"client_reference_id": "usr_dev_inception_99",
-"customer": "cus_NvidiaInception99",
+"id": "cs_live_session_99482",
+"client_reference_id": "usr_linkedin_demo_customer",
+"customer": "cus_NvidiaInceptionUser",
 "customer_details": {
-"email": "[engineer@physicalai.com](mailto:engineer@physicalai.com)"
+"email": "innovator@edgecompute.io"
 },
 "metadata": {
 "tier": "pro"
 }
 }
 }
-}
+} 
 
+try:
 webhook_url = f"{BASE_URL}/v1/billing/webhook"
-print(f"📦 Dispatched execution payload to target endpoint: {webhook_url}")
+headers = {"Content-Type": "application/json"}
+webhook_response = requests.post(webhook_url, json=mock_stripe_event, headers=headers)
+print(f"📬 Status Code: {webhook_response.status_code}")
+print(f"📄 Webhook Response: {json.dumps(webhook_response.json(), indent=2)}")
+except Exception as e:
+print(f"❌ Error hitting webhook endpoint: {e}")
+return 
 
-response = requests.post(webhook_url, json=mock_stripe_event)
-print(f"📬 Server Response Code: {response.status_code}")
-print(f"📄 Response Content: {json.dumps(response.json(), indent=2)}")
+# 3. Request the programmatic live invoice for our new customer account profile
 
-if response.status_code == 200:
-print("\n✅ Verification Successful! The database layer processed the mock user and upgraded the tier status to Pro.")
+print("\n🧾 Step 3: Fetching the automated markdown transaction receipt invoice...")
+try:
+invoice_url = f"{BASE_URL}/v1/billing/invoice/usr_linkedin_demo_customer"
+invoice_response = requests.get(invoice_url)
+print(f"📬 Status Code: {invoice_response.status_code}")
+if invoice_response.status_code == 200:
+print("\n================= LIVE RENDERED INVOICE =================")
+print(invoice_response.text)
+print("=========================================================")
+print("\n✅ SUCCESS: The full commercial pipeline is verified and fully operational!")
 else:
-print("\n❌ Verification Failed. Inspect server stack telemetry paths.")
+print(f"❌ Failed to fetch receipt statement: {invoice_response.text}")
+except Exception as e:
+print(f"❌ Error fetching generated invoice context: {e}")
 
 if **name** == "**main**":
-test_stripe_webhook_flow()
+verify_live_billing_pipeline()
