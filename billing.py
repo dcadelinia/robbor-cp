@@ -1,8 +1,9 @@
 import os
-from fastapi import APIRouter, Header, HTTPException, Depends
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Header, HTTPException
+from fastapi.responses import HTMLResponse, PlainTextResponse
 from pydantic import BaseModel
-import db 
+import db
+import invoice 
 
 router = APIRouter(prefix="/v1/billing", tags=["Billing Engine"]) 
 
@@ -23,23 +24,17 @@ return {"currency": "USD", "tiers": PRICING_TIERS}
 @router.post("/checkout")
 async def create_checkout_session(payload: CheckoutRequest):
 if payload.tier not in PRICING_TIERS:
-raise HTTPException(status_code=400, detail="Invalid tier selection.") 
-
-# Simulating secure payment link creation context
-
-checkout_url = f"[https://checkout.stripe.com/pay/mock_session_{payload.tier}_{payload.user_id}](https://checkout.stripe.com/pay/mock_session_{payload.tier}_{payload.user_id})"
+raise HTTPException(status_code=400, detail="Invalid tier selection.")
+checkout_url = f"https://checkout.stripe.com/pay/mock_session_{payload.tier}_{payload.user_id}"
 return {
 "status": "success",
 "checkout_url": checkout_url,
 "amount": PRICING_TIERS[payload.tier]["price_usd"]
-}
+} 
 
 @router.post("/webhook")
 async def stripe_webhook(payload: dict):
-"""Processes Stripe event webhooks to mutate database state profiles.""" 
-
-### In production, process event = stripe.Webhook.construct_event(...)
-
+"""Processes Stripe event webhooks to mutate database state profiles safely."""
 if payload.get("type") == "checkout.session.completed":
 data = payload.get("data", {}).get("object", {})
 user_id = data.get("client_reference_id", "unknown_user")
@@ -47,15 +42,29 @@ email = data.get("customer_details", {}).get("email", "client@example.com")
 tier = data.get("metadata", {}).get("tier", "starter")
 customer_id = data.get("customer", "cus_default") 
 
-# Write state changes permanently to disk
 db.update_user_subscription(user_id, email, tier, "active", customer_id)
 return {"processed": True, "action": "subscription_activated"}
 
 return {"processed": True, "action": "ignored"}
 
+@router.get("/invoice/{user_id}", response_class=PlainTextResponse)
+async def get_user_invoice(user_id: str):
+"""Retrieves and generates a live markdown transaction invoice for the client."""
+user_data = db.get_user_data(user_id)
+if not user_data or user_data["status"] != "active":
+raise HTTPException(status_code=404, detail="Active subscription record not found for this user.") 
+
+amount = PRICING_TIERS.get(user_data["tier"], {"price_usd": 0.00})["price_usd"]
+markdown_invoice = invoice.generate_markdown_invoice(
+user_id=user_data["user_id"],
+email=user_data["email"],
+tier=user_data["tier"],
+amount=amount
+)
+return markdown_invoice
 @router.get("/dashboard", response_class=HTMLResponse)
 async def serve_dashboard():
-"""Serves the interactive terminal subscriber checkout checkout panel UI."""
+"""Serves the interactive terminal subscriber checkout panel UI."""
 return """
  
 
