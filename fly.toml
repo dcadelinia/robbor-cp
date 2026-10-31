@@ -1,38 +1,37 @@
 app = "robbor-cp-uttvga"
-primary_region = "iad" 
+primary_region = "iad"
 
 [build]
-dockerfile = "Dockerfile" 
+  dockerfile = "Dockerfile"
 
 [env]
-PORT = "8080"
-MANTAGU_LOG_LEVEL = "INFO"
-MANTAGU_MOCK_SERIAL = "true" 
+  PORT = "8080"
+  MANTAGU_LOG_LEVEL = "INFO"
+  MANTAGU_MOCK_SERIAL = "true"
 
-### Define permanent disk storage mount properties
-
-[[mounts]]
-source = "mantagu_data"
-destination = "/data" 
+# REMOVE OR COMMENT OUT THESE LINES:
+# [[mounts]]
+#   source = "mantagu_data"
+#   destination = "/data"
 
 [[services]]
-internal_port = 8080
-processes = ["app"]
-protocol = "tcp" 
+  internal_port = 8080
+  processes = ["app"]
+  protocol = "tcp"
 
-[[services.ports]]
-force_https = true
-handlers = ["http"]
-port = 80 
+  [[services.ports]]
+    force_https = true
+    handlers = ["http"]
+    port = 80
 
-[[services.ports]]
-handlers = ["tls", "http"]
-port = 443 
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
 
-[[services.http_checks]]
-interval = "10s"
-grace_period = "5s"
-method = "get"
-path = "/health"
-protocol = "http"
-timeout = "2s"
+  [[services.http_checks]]
+    interval = "10s"
+    grace_period = "5s"
+    method = "get"
+    path = "/health"
+    protocol = "http"
+    timeout= "2s"
